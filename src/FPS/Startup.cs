@@ -53,6 +53,14 @@ namespace FPS
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+            services.AddTransient<TimekeepingService>();
+
+            services.ConfigureRouting(routeOptions =>
+            {
+                routeOptions.LowercaseUrls = false;
+            });
+
+            services.Configure<BiometricsConfig>(Configuration.GetSection(nameof(BiometricsConfig)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
