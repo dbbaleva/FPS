@@ -1,0 +1,181 @@
+﻿@{
+    ViewData["Title"] = "Timekeeping";
+}
+@section head {
+    <link rel="stylesheet" href="~/lib/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" />
+    <link rel="stylesheet" href="~/lib/iCheck/skins/flat/blue.css" />
+    <style type="text/css">
+        #download {
+            top: 25%;
+            background: none;
+        }
+
+            #download .modal-dialog {
+                width: 350px;
+            }
+    </style>
+}
+
+<section class="content-header">
+    <h1>
+        Timekeeping
+        <small>Keep track of employee work hours for payroll time records</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+        <li class="active">Here</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <form id="timekeeping-form" asp-controller="Timekeeping" asp-action="Search" class="form-horizontal" method="post">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Attendance Monitor</h3>
+                        <div class="box-tools pull-right">
+                            <div class="has-feedback">
+                                <input type="text" name="keyword" class="form-control input-sm" placeholder="Search">
+                                <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-body no-padding">
+                        <div class="mailbox-controls">
+                            <!-- Check all button -->
+                            <div class="btn-group">
+                                <a href="#download" class="btn btn-default btn-sm" data-toggle="modal"><i class="fa fa-download"></i></a>
+                                <button type="button" class="btn btn-default btn-sm save-record"><i class="fa fa-floppy-o"></i></button>
+                            </div>
+                        </div>
+                        <div class="table-responsive mailbox-messages no-padding">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Worktime</th>
+                                    <th>Overtime</th>
+                                    <th>Late</th>
+                                    <th>Undertime</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="no-data">
+                                    <td colspan="7">
+                                        <p class="text-muted">No current data to display</p>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box-footer no-padding">
+                        <div class="mailbox-controls">
+                            <div class="btn-group">
+                                <a href="#download" class="btn btn-default btn-sm" data-toggle="modal"><i class="fa fa-download"></i></a>
+                                <button type="button" class="btn btn-default btn-sm save-record"><i class="fa fa-floppy-o"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!-- /.content -->
+<div id="download" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="form-horizontal" asp-controller="Timekeeping" asp-action="Download" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Query Attendance</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="from" class="col-sm-2 control-label">From</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="from" name="from" placeholder="mm/dd/yyy" data-provide="datepicker" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="to" class="col-sm-2 control-label">To</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="to" name="to" placeholder="mm/dd/yyy" data-provide="datepicker" required>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+@section scripts {
+    <script src="~/lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/lib/iCheck/icheck.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/jquery-form/jquery.form.js"></script>
+    <!-- Page Script -->
+    <script>
+        $(function() {
+            $(document).ajaxStart(function() { Pace.restart(); });
+
+            var bindForm = function () {
+                $("#timekeeping-form").ajaxForm({
+                    success: function (result) {
+                        if (result != null) {
+                            $('.mailbox-messages tbody').html(result);
+                        }
+                    }
+                });
+            }
+
+            bindForm();
+
+            $(".save-record").click(function () {
+                $("#timekeeping-form").ajaxFormUnbind();
+
+                var form = document.getElementById("timekeeping-form");
+                var action = form.action;
+                var target = form.target;
+
+                form.action = "timekeeping/save";
+                form.target = "_blank";
+                form.submit();
+
+                form.action = action;
+                form.target = target;
+
+                bindForm();
+            });
+
+
+            $('.modal form').ajaxForm({
+                beforeSubmit: function() {
+                    $('.modal').modal('toggle');
+                },
+                success: function(result) {
+                    if (result != null) {
+                        $('.mailbox-messages .table').html(result);
+                    }
+                }
+            });
+        });
+    </script>
+}

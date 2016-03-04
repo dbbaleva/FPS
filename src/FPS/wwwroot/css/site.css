@@ -1,0 +1,47 @@
+/*=================================================
+ * Theme overrides
+ *=================================================*/
+.sidebar-menu .treeview-menu > li.active > a > .fa.fa-circle-o:before {
+  content: "\f192";
+}
+.avatar {
+  position: relative;
+}
+.avatar .user-initials {
+  background: #3c8dbc;
+  border: 2px solid #fff;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+}
+.avatar img,
+.avatar .user-initials {
+  border-radius: 100%;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+.navbar-nav > .user-menu .user-image {
+  height: 40px;
+  width: 40px;
+  margin-top: -10px;
+}
+.navbar-nav > .user-menu .user-image .user-initials {
+  line-height: 35px;
+}
+.table > tbody > tr.no-data,
+.table > tbody > tr.no-data:hover {
+    background-color: #fff;
+}
+.table > tbody > tr.no-data p {
+    margin: 10px;
+}
+.mailbox-controls .btn>.fa {
+    width: 11px;
+}
+.form-horizontal .has-feedback .form-control-feedback {
+    right: 0;
+}

@@ -1,0 +1,13 @@
+﻿@model IEnumerable<AttendanceSummary>
+@foreach (var s in Model)
+{
+    <tr>
+        <td>@s.EmployeeName</td>
+        <td class="">@s.From.ToShortDateString()</td>
+        <td class="">@s.To.ToShortDateString()</td>
+        <td>@s.Worktime.TimeSpan.ToString("g")</td>
+        <td>@s.Overtime.TimeSpan.ToString("g")</td>
+        <td>@s.Late.TimeSpan.ToString("g")</td>
+        <td>@s.Undertime.TimeSpan.ToString("g")</td>
+    </tr>
+}
