@@ -1,0 +1,14 @@
+﻿@model TimeAttendance
+
+@{var model = (string) ViewBag.ModelName;}
+
+<input type="hidden" value="@Model.EmployeeName" name="@($"{model}.EmployeeName")" />
+<input type="hidden" value="@Model.EmployeeTitle" name="@($"{model}.EmployeeTitle")" />
+<input type="hidden" value="@Model.Date" name="@($"{model}.Date")" />
+<input type="hidden" value="@Model.TimeIn" name="@($"{model}.TimeIn")" />
+<input type="hidden" value="@Model.TimeOut" name="@($"{model}.TimeOut")" />
+<input type="hidden" value="@Model.Worktime" name="@($"{model}.Worktime")" />
+<input type="hidden" value="@Model.Late" name="@($"{model}.Late")" />
+<input type="hidden" value="@Model.Overtime" name="@($"{model}.Overtime")" />
+<input type="hidden" value="@Model.Undertime" name="@($"{model}.Undertime")" />
+<input type="hidden" value="@Model.Remarks" name="@($"{model}.Remarks")" />

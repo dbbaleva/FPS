@@ -20,7 +20,7 @@ namespace FPS.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
-            return View();
+            return View(new AttendanceSummary[] {});
         }
 
         [HttpPost]
@@ -31,7 +31,7 @@ namespace FPS.Controllers
                 return new NoContentResult();
 
             var model = await TimekeepingService.GetAttendanceAsync(from, to);
-            return PartialView("_Download", model);
+            return PartialView("_Table", AttendanceSummary.Create(model.ToList()));
         }
 
 
@@ -48,10 +48,10 @@ namespace FPS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Search(IEnumerable<TimeAttendance> timeAttendance, string keyword)
+        public IActionResult Search(IEnumerable<TimeAttendance> list, string keyword)
         {
-            var model = string.IsNullOrEmpty(keyword) ? timeAttendance : timeAttendance.Where(q => q.EmployeeName.ToUpper().Contains(keyword.ToUpper()));
-            return PartialView("_Rows", AttendanceSummary.Create(model.ToList()));
+            var model = string.IsNullOrEmpty(keyword) ? list : list.Where(q => q.EmployeeName.ToUpper().Contains(keyword.ToUpper()));
+            return PartialView("_SummaryRows", AttendanceSummary.Create(model.ToList()));
         }
     }
 }

@@ -1,7 +1,12 @@
 ﻿@model IEnumerable<AttendanceSummary>
-@foreach (var s in Model)
+@{
+    ViewBag.Index = 0;
+}
+@for (var i = 0; i < Model.Count(); i++)
 {
+    var s = Model.ElementAt(i);
     <tr>
+        <td><i class="fa drill-down"></i></td>
         <td>@s.EmployeeName</td>
         <td class="">@s.From.ToShortDateString()</td>
         <td class="">@s.To.ToShortDateString()</td>
@@ -10,4 +15,11 @@
         <td>@s.Late.TimeSpan.ToString("g")</td>
         <td>@s.Undertime.TimeSpan.ToString("g")</td>
     </tr>
+    <tr class="hidden no-hover">
+        <td>&nbsp;</td>
+        <td colspan="7">
+            @await Html.PartialAsync("_Details", s.Attendance)
+        </td>
+    </tr>
+    ViewBag.Index = (int)ViewBag.Index + s.Attendance.Count;
 }

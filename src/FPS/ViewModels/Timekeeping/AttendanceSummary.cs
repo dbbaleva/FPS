@@ -14,6 +14,12 @@ namespace FPS.ViewModels.Timekeeping
         public DateTime To { get; set; }
         public WorkTime Undertime { get; set; }
         public WorkTime Worktime { get; set; }
+        public ICollection<TimeAttendance> Attendance { get; set; }
+
+        public AttendanceSummary()
+        {
+            Attendance = new HashSet<TimeAttendance>();
+        }
 
         public static ICollection<AttendanceSummary> Create(ICollection<TimeAttendance> collection)
         {
@@ -26,7 +32,8 @@ namespace FPS.ViewModels.Timekeeping
                     Worktime = WorkTime.Parse(q.Select(t => t.Worktime).ToList()),
                     Overtime = WorkTime.Parse(q.Select(t => t.Overtime).ToList()),
                     Late = WorkTime.Parse(q.Select(t => t.Late).ToList()),
-                    Undertime = WorkTime.Parse(q.Select(t => t.Undertime).ToList())
+                    Undertime = WorkTime.Parse(q.Select(t => t.Undertime).ToList()),
+                    Attendance = q.ToList()
                 }).ToList();
         }
     }

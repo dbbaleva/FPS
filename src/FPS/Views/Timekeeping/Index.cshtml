@@ -10,9 +10,26 @@
             background: none;
         }
 
-            #download .modal-dialog {
-                width: 350px;
-            }
+        #download .modal-dialog {
+            width: 350px;
+        }
+
+        .table-hover > tbody > tr.no-hover:hover {
+            background-color: #fff;
+        }
+
+        .drill-down {
+            cursor: pointer;
+        }
+
+        .drill-down:before {
+            content: "\f196";
+        }
+
+        .drill-down.collapsed:before {
+            content: "\f147";
+        }
+        
     </style>
 }
 
@@ -29,60 +46,39 @@
 <!-- Main content -->
 <section class="content">
     <div class="row">
-        <form id="timekeeping-form" asp-controller="Timekeeping" asp-action="Search" class="form-horizontal" method="post">
-            <div class="col-xs-12">
-                <div class="box box-primary">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Attendance Monitor</h3>
-                        <div class="box-tools pull-right">
-                            <div class="has-feedback">
-                                <input type="text" name="keyword" class="form-control input-sm" placeholder="Search">
-                                <span class="glyphicon glyphicon-search form-control-feedback"></span>
-                            </div>
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Attendance Monitor</h3>
+                    <div class="box-tools pull-right">
+                        <div class="has-feedback">
+                            <input id="searchbox" type="text" name="keyword" class="form-control input-sm" placeholder="Search" autocomplete="off">
+                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
                         </div>
                     </div>
-                    <div class="box-body no-padding">
-                        <div class="mailbox-controls">
-                            <!-- Check all button -->
-                            <div class="btn-group">
-                                <a href="#download" class="btn btn-default btn-sm" data-toggle="modal"><i class="fa fa-download"></i></a>
-                                <button type="button" class="btn btn-default btn-sm save-record"><i class="fa fa-floppy-o"></i></button>
-                            </div>
-                        </div>
-                        <div class="table-responsive mailbox-messages no-padding">
-                            <table class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>From</th>
-                                    <th>To</th>
-                                    <th>Worktime</th>
-                                    <th>Overtime</th>
-                                    <th>Late</th>
-                                    <th>Undertime</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr class="no-data">
-                                    <td colspan="7">
-                                        <p class="text-muted">No current data to display</p>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                </div>
+                <div class="box-body no-padding">
+                    <div class="mailbox-controls">
+                        <!-- Check all button -->
+                        <div class="btn-group">
+                            <a href="#download" class="btn btn-default btn-sm" data-toggle="modal"><i class="fa fa-download"></i></a>
+                            <button type="button" class="btn btn-default btn-sm save-record"><i class="fa fa-floppy-o"></i></button>
                         </div>
                     </div>
-                    <div class="box-footer no-padding">
-                        <div class="mailbox-controls">
-                            <div class="btn-group">
-                                <a href="#download" class="btn btn-default btn-sm" data-toggle="modal"><i class="fa fa-download"></i></a>
-                                <button type="button" class="btn btn-default btn-sm save-record"><i class="fa fa-floppy-o"></i></button>
-                            </div>
+                    <div class="table-responsive mailbox-messages no-padding">
+                        @await Html.PartialAsync("_Table")
+                    </div>
+                </div>
+                <div class="box-footer no-padding">
+                    <div class="mailbox-controls">
+                        <div class="btn-group">
+                            <a href="#download" class="btn btn-default btn-sm" data-toggle="modal"><i class="fa fa-download"></i></a>
+                            <button type="button" class="btn btn-default btn-sm save-record"><i class="fa fa-floppy-o"></i></button>
                         </div>
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
 </section>
 <!-- /.content -->
@@ -136,46 +132,51 @@
         $(function() {
             $(document).ajaxStart(function() { Pace.restart(); });
 
-            var bindForm = function () {
-                $("#timekeeping-form").ajaxForm({
-                    success: function (result) {
-                        if (result != null) {
-                            $('.mailbox-messages tbody').html(result);
+            $('#searchbox').keypress(function(e) {
+                var $this = $(this);
+                if (e.which === 13) {
+                    e.preventDefault();
+
+                    $('#search-form').ajaxSubmit({
+                        data: {
+                            keyword: $this.val() 
+                        },
+                        success: function(result) {
+                            $('#timekeeping-form>table>tbody').html(result);
                         }
-                    }
-                });
-            }
-
-            bindForm();
-
-            $(".save-record").click(function () {
-                $("#timekeeping-form").ajaxFormUnbind();
-
-                var form = document.getElementById("timekeeping-form");
-                var action = form.action;
-                var target = form.target;
-
-                form.action = "timekeeping/save";
-                form.target = "_blank";
-                form.submit();
-
-                form.action = action;
-                form.target = target;
-
-                bindForm();
+                    });
+                }
             });
-
 
             $('.modal form').ajaxForm({
                 beforeSubmit: function() {
                     $('.modal').modal('toggle');
                 },
                 success: function(result) {
-                    if (result != null) {
-                        $('.mailbox-messages .table').html(result);
-                    }
+                    $('.mailbox-messages').html(result);
                 }
             });
+
+            $('.save-record').click(function() {
+                $('#timekeeping-form').submit();
+            });
+
+            $(document).on(
+                'click',
+                '.mailbox-messages .drill-down',
+                function() {
+                    var $this = $(this);
+                    var $row = $this.closest('tr').next();
+
+                    $this.toggleClass('collapsed');
+
+                    if ($this.hasClass('collapsed')) {
+                        $row.removeClass('hidden');
+                    } else {
+                        $row.addClass('hidden');
+                    }
+                }
+            );
         });
     </script>
 }
