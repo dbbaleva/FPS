@@ -1,0 +1,46 @@
+﻿@model IEnumerable<AttendanceSummary>
+
+<form id="timekeeping-form" class="form-horizontal" asp-controller="Timekeeping" asp-action="Save" method="post" target="_blank">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Worktime</th>
+            <th>Overtime</th>
+            <th>Late</th>
+            <th>Undertime</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (!Model.Any())
+        {
+            <tr class="no-data">
+                <td colspan="8">
+                    <p class="text-muted">No current data to display</p>
+                </td>
+            </tr>
+        }
+        else
+        {
+            @await Html.PartialAsync("_SummaryRows", Model)
+        }
+        </tbody>
+    </table>
+</form>
+
+@{
+    var attendances = Model.SelectMany(q => q.Attendance).ToList();
+}
+<form id="search-form" asp-controller="Timekeeping" asp-action="Search" method="post">
+    @for (var i = 0; i < attendances.Count; i++)
+    {
+        var row = attendances.ElementAt(i);
+        ViewBag.ModelName = $"list[{i}]";
+        @await Html.PartialAsync("_HiddenInputs", row)
+    }    
+</form>
+
+    

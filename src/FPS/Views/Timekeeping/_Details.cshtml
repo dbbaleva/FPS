@@ -1,0 +1,31 @@
+﻿@model IEnumerable<TimeAttendance>
+@{
+    var i = (int) ViewBag.Index;
+}
+<table class="table">
+    <tbody>
+        <tr>
+            <th>Time In</th>
+            <th>Time Out</th>
+            <th>Late</th>
+            <th>Overtime</th>
+            <th>Undertime</th>
+            <th>Remarks</th>
+        </tr>
+    @foreach (var row in Model)
+    {
+        ViewBag.ModelName = $"TimeAttendance[{i++}]";
+        <tr>
+            <td>@row.TimeIn?.ToString("g")</td>
+            <td>@row.TimeOut?.ToString("g")</td>
+            <td>@row.Late.ToString("g")</td>
+            <td>@row.Overtime.ToString("g")</td>
+            <td>@row.Undertime.ToString("g")</td>
+            <td>
+                @row.Remarks
+                @await Html.PartialAsync("_HiddenInputs", row)
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
