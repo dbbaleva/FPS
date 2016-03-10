@@ -25,11 +25,8 @@ namespace FPS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Download(DateTime? from, DateTime? to)
+        public async Task<IActionResult> Download(DateTime from, DateTime to)
         {
-            if (from == null || to == null)
-                return new NoContentResult();
-
             var model = await TimekeepingService.GetAttendanceAsync(from, to);
             return PartialView("_Table", AttendanceSummary.Create(model.ToList()));
         }
