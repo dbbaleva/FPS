@@ -53,7 +53,7 @@ namespace FPS
 
             services.ConfigureRouting(routeOptions =>
             {
-                routeOptions.LowercaseUrls = false;
+                routeOptions.LowercaseUrls = true;
             });
 
             services.Configure<BiometricsConfig>(Configuration.GetSection(nameof(BiometricsConfig)));

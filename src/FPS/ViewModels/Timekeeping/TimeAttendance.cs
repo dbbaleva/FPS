@@ -32,7 +32,7 @@ namespace FPS.ViewModels.Timekeeping
             // compute worktime
             Worktime = (TimeSpan)(TimeOut - TimeIn);
             Overtime = (TimeSpan)(TimeOut - TimeIn);
-            Remarks = "Overtime";
+            Remarks = "OVERTIME";
 
             return this;
         }
@@ -67,33 +67,11 @@ namespace FPS.ViewModels.Timekeeping
 
             var remarks = new List<string>();
 
-            // offset 60 minutes when employee did not time in/out
+            // 1 hour late if no timein
             if (TimeIn == null)
             {
                 TimeIn = timein.AddMinutes(60);
                 remarks.Add("NO TIMEIN");
-            }
-
-            if (TimeOut == null)
-            {
-                TimeOut = timeout.AddMinutes(-60);
-                remarks.Add("NO TIMEOUT");
-            }
-
-            // compute worktime
-            Worktime = (TimeSpan)(TimeOut - TimeIn);
-
-            // if weekdays then deduct one hour from worktime as lunch break
-            if (IsWeekDay(date))
-            {
-                if (TimeOut > lunch && TimeOut < afterLunch)
-                {
-                    Worktime = Worktime.Add((TimeSpan)(TimeOut - lunch));
-                }
-                if (TimeOut >= afterLunch && Worktime >= new TimeSpan(1, 0, 0))
-                {
-                    Worktime -= new TimeSpan(1, 0, 0);
-                }
             }
 
             // late if beyond grace period
@@ -102,20 +80,52 @@ namespace FPS.ViewModels.Timekeeping
                 Late = (TimeSpan)(TimeIn - timein);
                 remarks.Add("LATE");
             }
-            // overtime
-            if (TimeOut > overtime)
+
+
+            // 1 hour undertime if no timeout
+            if (TimeOut == null)
             {
-                Overtime = (TimeSpan)(TimeOut - overtime);
-                // deduct 5 minutes from overtime
-                if (Overtime >= new TimeSpan(0, 5, 0))
-                    Overtime = Overtime.Add(new TimeSpan(0, -5, 0));
-                remarks.Add("OVERTIME");
+                if (Date != DateTime.Today || DateTime.Now >= timeout)
+                {
+                    TimeOut = timeout.AddMinutes(-60);
+                    remarks.Add("NO TIMEOUT");
+                }
             }
-            // undertime
-            if (TimeOut < timeout)
+
+            if (TimeIn != null && TimeOut != null)
             {
-                Undertime = (TimeSpan)(timeout - TimeOut);
-                remarks.Add("UNDERTIME");
+                // undertime
+                if (TimeOut < timeout)
+                {
+                    Undertime = (TimeSpan)(timeout - TimeOut);
+                    remarks.Add("UNDERTIME");
+                }
+
+                // compute worktime
+                Worktime = (TimeSpan)(TimeOut - TimeIn);
+
+                // if weekdays then deduct one hour from worktime as lunch break
+                if (IsWeekDay(date))
+                {
+                    if (TimeOut > lunch && TimeOut < afterLunch)
+                    {
+                        Worktime = Worktime.Add((TimeSpan)(TimeOut - lunch));
+                    }
+                    if (TimeOut >= afterLunch && Worktime >= new TimeSpan(1, 0, 0))
+                    {
+                        Worktime -= new TimeSpan(1, 0, 0);
+                    }
+                }
+
+                // overtime
+                if (TimeOut > overtime)
+                {
+                    Overtime = (TimeSpan)(TimeOut - overtime);
+                    // deduct 5 minutes from overtime
+                    if (Overtime >= new TimeSpan(0, 5, 0))
+                        Overtime = Overtime.Add(new TimeSpan(0, -5, 0));
+                    remarks.Add("OVERTIME");
+                }
             }
 
             if (remarks.Any())

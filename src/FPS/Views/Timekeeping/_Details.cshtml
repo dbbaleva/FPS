@@ -16,11 +16,11 @@
     {
         ViewBag.ModelName = $"TimeAttendance[{i++}]";
         <tr>
-            <td>@row.TimeIn?.ToString("g")</td>
-            <td>@row.TimeOut?.ToString("g")</td>
-            <td>@row.Late.ToString("g")</td>
-            <td>@row.Overtime.ToString("g")</td>
-            <td>@row.Undertime.ToString("g")</td>
+            <td>@((row.Remarks ?? "").Contains("ABSENT") ? "-" : row.TimeIn?.ToString("g"))</td>
+            <td>@((row.Remarks ?? "").Contains("ABSENT") ? "-" : row.TimeOut?.ToString("g"))</td>
+            <td>@((row.Remarks ?? "").Contains("ABSENT") ? "-" : row.Late.ToString("g"))</td>
+            <td>@((row.Remarks ?? "").Contains("ABSENT") ? "-" : row.Overtime.ToString("g"))</td>
+            <td>@((row.Remarks ?? "").Contains("ABSENT") ? "-" : row.Undertime.ToString("g"))</td>
             <td>
                 @row.Remarks
                 @await Html.PartialAsync("_HiddenInputs", row)

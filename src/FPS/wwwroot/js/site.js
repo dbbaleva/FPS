@@ -770,4 +770,27 @@ function _init() {
         });
         return o;
     };
+
+    $.fn.reset = function () {
+        var $this = $(this);
+
+        if ($this.length === 0)
+            return;
+
+        if ($this.prop('tagName') !== 'FORM')
+            return;
+
+        $this[0].reset();
+
+        if ($this.find('.select2').length > 0) 
+            $this.find('.select2').select2('val', '');
+
+        var validator = $this.data('validator');
+        if (!validator)
+            return;
+
+        validator.resetForm();
+
+        $(this).find('.error').removeAttr('title').removeClass('error');
+    };
 }(jQuery));

@@ -52,7 +52,7 @@ namespace FPS.ViewModels.Timekeeping
                         // no timeout but with timein
                         if (cout == null)
                         {
-                            if (cin != null)
+                            if (cin != null && cin.TimeStamp.Date != DateTime.Today)
                             {
                                 cout2 =
                                     attLog.LastOrDefault(l => l.TimeStamp > cin.TimeStamp);
@@ -81,7 +81,7 @@ namespace FPS.ViewModels.Timekeeping
                         // absent
                         attendance.TimeIn = date;
                         attendance.TimeOut = date;
-                        attendance.Remarks = "ABSENT";
+                        attendance.Remarks = $"ABSENT ({date.ToShortDateString()})";
                     }
 
                     yield return attendance;

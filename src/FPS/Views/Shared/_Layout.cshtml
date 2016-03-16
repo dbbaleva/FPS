@@ -9,10 +9,9 @@
     <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
     <link rel="stylesheet" href="~/lib/ionicons/css/ionicons.css" />
     <link rel="stylesheet" href="~/lib/pace/themes/black/pace-theme-minimal.css" />
+    @RenderSection("head", required: false)
     <link rel="stylesheet" href="~/css/AdminLTE.css" />
     <link rel="stylesheet" href="~/css/skins/_all-skins.css" />
-
-    @RenderSection("head", required: false)
 
     <environment names="Development">
         <link rel="stylesheet" href="~/css/site.css" />
@@ -31,16 +30,16 @@
     <![endif]-->
 
 </head>
-<body class="hold-transition skin-blue sidebar-mini fixed">
+<body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
         <!-- Main Header -->
         <header class="main-header">
             <!-- Logo -->
             <a href="index2.html" class="logo">
                 <!-- mini logo for sidebar mini 50x50 pixels -->
-                <span class="logo-mini"><b>A</b>LT</span>
+                <span class="logo-mini"><b>FPS</b></span>
                 <!-- logo for regular state and mobile devices -->
-                <span class="logo-lg"><b>Admin</b>LTE</span>
+                <span class="logo-lg"><b>FPS</b>MANILA</span>
             </a>
 
             <!-- Header Navbar -->
@@ -78,6 +77,8 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
     <script src="~/lib/slimScroll/jquery.slimscroll.js"></script>
     <script src="~/lib/fastclick/lib/fastclick.js"></script>
+
+    @RenderSection("scripts", required: false)
     <environment names="Development">
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
@@ -85,6 +86,6 @@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
-    @RenderSection("scripts", required: false)
+    
 </body>
 </html>

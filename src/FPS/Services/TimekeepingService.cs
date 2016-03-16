@@ -38,7 +38,7 @@ namespace FPS.Services
 
         public IEnumerable<Employee> GetEmployees()
         {
-            const string commandText = "SELECT [BADGENUMBER], [TITLE], [NAME] FROM USERINFO";
+            const string commandText = "SELECT * FROM USERINFO";
             return _database.Query<Employee>(commandText).OrderBy(q => q).ToList();
         }
 
