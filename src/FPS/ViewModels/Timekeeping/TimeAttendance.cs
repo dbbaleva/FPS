@@ -29,10 +29,19 @@ namespace FPS.ViewModels.Timekeeping
 
         public TimeAttendance ComputeOT()
         {
-            // compute worktime
-            Worktime = (TimeSpan)(TimeOut - TimeIn);
-            Overtime = (TimeSpan)(TimeOut - TimeIn);
-            Remarks = "OVERTIME";
+            if (TimeIn != null && TimeOut != null)
+            {
+                // compute worktime
+                Worktime = (TimeSpan)(TimeOut - TimeIn);
+
+                Overtime = Worktime;
+
+                // deduct 5 minutes from overtime
+                if (Overtime >= new TimeSpan(0, 5, 0))
+                    Overtime = Overtime.Add(new TimeSpan(0, -5, 0));
+
+                Remarks = "OVERTIME";
+            }
 
             return this;
         }
