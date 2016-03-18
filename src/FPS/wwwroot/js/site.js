@@ -781,16 +781,28 @@ function _init() {
             return;
 
         $this[0].reset();
-
-        if ($this.find('.select2').length > 0) 
-            $this.find('.select2').select2('val', '');
-
-        var validator = $this.data('validator');
-        if (!validator)
-            return;
-
-        validator.resetForm();
-
-        $(this).find('.error').removeAttr('title').removeClass('error');
     };
 }(jQuery));
+
+
+// auto bind events
+$(function () {
+
+    // additional cleanup on form reset
+    
+    $('form').on('reset', function () {
+        var $this = $(this);
+        // if form has select2 then reset
+        var select2 = $this.find('select.select2');
+        if (select2.length > 0) {
+            select2.val(null).trigger('change');
+        }
+        // perform jquery-validation form reset
+        var validator = $this.data('validator');
+        if (!validator) {
+            return;
+        }
+        validator.resetForm();
+        $(this).find('.error').removeAttr('title').removeClass('error');
+    });
+});

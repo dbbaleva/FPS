@@ -1,0 +1,162 @@
+﻿<script src="~/lib/moment/min/moment.min.js"></script>
+<script src="~/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/lib/jquery-form/jquery.form.js"></script>
+<script src="~/lib/select2/dist/js/select2.full.min.js"></script>
+<!-- Page Script -->
+<script>
+    $.validator.setDefaults({
+        showErrors: function (map, list) {
+            var errorClass = this.settings.errorClass;
+            // reset errors
+            this.currentElements.removeAttr('title').removeClass(errorClass);
+            // display errors
+            $.each(list, function (index, error) {
+                var $elem = $(error.element);
+                if ($elem.hasClass('select2')) {
+                    $elem = $elem.next();
+                }
+                $elem.attr('title', error.message).addClass(errorClass);
+            });
+        }
+    });
+
+    $(function () {
+        $(document).ajaxStart(function () { Pace.restart(); });
+
+        // initialize validation
+        $('.modal form').each(function () {
+            var $form = $(this);
+            var validator = $form.validate();
+            $form.data('validator', validator);
+        });
+
+        // reset form everytime the modal is hidden
+        $('.modal').on('hide.bs.modal', function () {
+            $(this).find('form').reset();
+        });
+
+        // download attendance logs
+        $('#grid-filters').ajaxForm({
+            success: function (result) {
+                $('#timekeeping-form').replaceWith(result);
+            }
+        });
+
+        // grid filters 
+        $('.filter-record').click(function () {
+            if ($('#timekeeping-form>table>tbody tr:not(.no-data)').length === 0)
+                return;
+
+            var data = $('#grid-filters').serializeObject();
+            // remove conflicting antiforgery token
+            data['__RequestVerificationToken'] = null;
+            delete data['__RequestVerificationToken'];
+
+            $('#search-form').ajaxSubmit({
+                data: data,
+                success: function(result) {
+                    $('#timekeeping-form>table>tbody').html(result);
+                }
+            });
+        });
+
+        // load attendance logs
+        $('#download form').ajaxForm({
+            beforeSubmit: function (arr, $form, options) {
+                var b = $form.valid();
+                if (b) {
+                    $('#download').modal('toggle');
+                }
+                return b;
+            },
+            data: $('#grid-filters').serializeObject(),
+            success: function (result) {
+                $('#timekeeping-form').replaceWith(result);
+            }
+        });
+
+        // add new entry to attendance logs
+        $('#data-entry :submit').click(function (e) {
+            e.preventDefault();
+            var form = $('#data-entry form');
+            if (!form.valid())
+                return;
+            var data = form.serializeObject();
+            $('#timekeeping-form').ajaxSubmit({
+                url: '/timekeeping/dataentry',
+                data: data,
+                success: function (result) {
+                    $('#timekeeping-form>table>tbody').html(result);
+                    $('#data-entry form').reset();
+                }
+            });
+        });
+
+        // save logs as report
+        $('.save-record').click(function () {
+            if ($('#timekeeping-form>table>tbody tr:not(.no-data)').length === 0)
+                return;
+
+            $('#timekeeping-form').submit();
+        });
+
+        // enable drill down on grid/table
+        $(document).on(
+            'click',
+            '#timekeeping-form .drill-down',
+            function () {
+                var $this = $(this);
+                var $row = $this.closest('tr').next();
+
+                $this.toggleClass('collapsed');
+
+                if ($this.hasClass('collapsed')) {
+                    $row.removeClass('hidden');
+                } else {
+                    $row.addClass('hidden');
+                }
+            }
+        );
+
+        // employee list
+        $(".employee-list").select2({
+            ajax: {
+                url: '/api/timekeeping/employees',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        s: 10
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 1,
+            placeholder: 'Employee Name'
+        }).on(
+            'select2:select',
+            function (e) {
+                var cascade = $(this).data('cascade');
+                if (cascade) {
+                    $(cascade).val(e.params.data.text);
+                    $(this).next().removeAttr('title').removeClass('error');
+                }
+            }
+        );
+
+        $('.datetimepicker').datetimepicker({
+            useCurrent: false
+        });
+        $('.datepicker').datetimepicker({
+            format: 'MM/DD/YYYY'
+        });
+    });
+</script>

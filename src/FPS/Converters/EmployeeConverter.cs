@@ -10,7 +10,7 @@ namespace FPS.Converters
         {
             return new Employee
             {
-                UserId = int.Parse(record["USERID"].ToString()),
+                Id = int.Parse(record["USERID"].ToString()),
                 BadgeNumber = int.Parse(record["BADGENUMBER"].ToString()),
                 EmployeeTitle = record["TITLE"]?.ToString(),
                 EmployeeName = record["NAME"]?.ToString()

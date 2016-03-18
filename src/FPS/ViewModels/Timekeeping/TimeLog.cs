@@ -23,10 +23,16 @@ namespace FPS.ViewModels.Timekeeping
                 {
                     var attendance = new TimeAttendance
                     {
+                        EmployeeId = ee.Id,
                         EmployeeName = ee.EmployeeName,
                         EmployeeTitle = ee.EmployeeTitle,
                         Date = date
                     };
+
+                    if (ee.EmployeeName.Contains("ALANO"))
+                    {
+                        var temp = ee;
+                    }
 
                     var attLog = timeLogs.Where(l => l.EnrollNumber == ee.BadgeNumber &&
                                                  l.TimeStamp.Date == attendance.Date).ToList();

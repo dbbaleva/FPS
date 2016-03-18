@@ -7,7 +7,7 @@ namespace FPS.ViewModels.Timekeeping
 {
     public class Employee : IComparable
     {
-        public int UserId { get; set; }
+        public int Id { get; set; }
         public int BadgeNumber { get; set; }
         public string EmployeeName { get; set; }
         public string EmployeeTitle { get; set; }

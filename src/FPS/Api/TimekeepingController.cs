@@ -37,7 +37,7 @@ namespace FPS.Api
                 model = model.Take((int)s);
             return model.Select(ee => new 
             {
-                id = ee.UserId,
+                id = ee.Id,
                 text = ee.EmployeeName
             }).ToList();
         }

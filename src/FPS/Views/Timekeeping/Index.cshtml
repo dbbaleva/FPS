@@ -2,70 +2,16 @@
     ViewData["Title"] = "Timekeeping";
 }
 @section head {
-    <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
-    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css"/>
-
-    <style type="text/css">
-        .modal-dialog {
-            top: 25%;
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-
-        #download .modal-dialog {
-            width: 350px;
-        }
-
-        .table-hover > tbody > tr.no-hover:hover {
-            background-color: #fff;
-        }
-
-        .drill-down {
-            cursor: pointer;
-        }
-
-            .drill-down:before {
-                content: "\f196";
-            }
-
-            .drill-down.collapsed:before {
-                content: "\f147";
-            }
-
-        .error {
-            border: 1px solid red !important;
-        }
-
-        .select2-container {
-            border: 1px solid #d2d6de;
-            border-right-color: transparent;
-        }
-        
-        .select2-container--default .select2-selection--single {
-            border-color: transparent !important;
-        }
-
-        .select2-container--open .select2-dropdown--below  {
-            margin: -1px;
-        }
-
-        #employee {
-            position: absolute;
-            top: 34px;
-        }
-    </style>
+    @await Html.PartialAsync("_Styles")
 }
-
 <section class="content-header">
     <h1>
         Timekeeping
         <small>Keep track of employee work hours for payroll time records</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-        <li class="active">Here</li>
+        <li><a asp-controller="Home" asp-action="Index"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">@ViewData["Title"]</li>
     </ol>
 </section>
 <!-- Main content -->
@@ -74,73 +20,82 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Attendance Monitor</h3>
-                    <div class="box-tools pull-right">
-                        <div class="has-feedback">
-                            <input id="searchbox" type="text" name="keyword" class="form-control input-sm" placeholder="Search" autocomplete="off">
-                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
-                        </div>
+                    <h3 class="box-title">Attendance Monitoring</h3>
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
                     </div>
                 </div>
+                <div class="box-body">
+                    <form id="grid-filters" asp-controller="Timekeeping" asp-action="Download" method="post">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label class="control-label" for="filter_02">From</label>
+                                    <input type="text" id="filter_02" name="timeIn" placeholder="From" class="form-control datepicker">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label class="control-label" for="filter_03">To</label>
+                                    <input type="text" id="filter_03" name="timeOut" placeholder="To" class="form-control datepicker">
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label" for="filter_01">Employee Name</label>
+                                    <select id="filter_01" name="employeeId" class="form-control select2 employee-list" style="width: 100%">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label" for="filter_04">Remarks</label>
+                                    <select name="remarks" id="filter_04" class="form-control">
+                                        <option value="">Select Item</option>
+                                        <option value="ABSENT">Absent</option>
+                                        <option value="LATE">Late</option>
+                                        <option value="OVERTIME">Overtime</option>
+                                        <option value="UNDERTIME">Undertime</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-toolbar">
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-default btn-sm"><i class="fa fa-download"></i></button>
+                                <button type="reset" class="btn btn-default btn-sm"><i class="fa fa-times"></i></button>
+                                <button type="button" class="btn btn-default btn-sm save-record"><i class="fa fa-floppy-o"></i></button>
+                            </div>
+                            <div class="btn-group">
+                                <a href="#" class="btn btn-default btn-sm" data-toggle="modal" data-backdrop="false" data-target="#data-entry"><i class="fa fa-plus"></i></a>
+                            </div>
+                            <button type="button" class="btn btn-success btn-sm filter-record pull-right"><i class="fa fa-filter"></i> &nbsp; Apply Filter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-solid">
                 <div class="box-body no-padding">
-                    @await Html.PartialAsync("_GridToolbar")
-                    <div class="table-responsive mailbox-messages no-padding">
+                    <div class="table-responsive">
                         @await Html.PartialAsync("_Table")
                     </div>
                 </div>
                 <div class="box-footer no-padding">
-                    @await Html.PartialAsync("_GridToolbar")
+                    
                 </div>
             </div>
         </div>
     </div>
 </section>
 <!-- /.content -->
-<!-- modals -->
-<div id="download" class="modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form class="form-horizontal" asp-controller="Timekeeping" asp-action="Download" method="post">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title">Query Attendance</h4>
-                </div>
-                <div class="modal-body">
-
-                    <div class="box-body">
-                        <div class="form-group">
-                            <label for="from" class="col-sm-2 control-label">From</label>
-                            <div class="col-sm-10">
-                                <div class="input-group">
-                                    <input type="text" class="form-control datepicker" id="from" name="from" placeholder="mm/dd/yyyy" required>
-                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="to" class="col-sm-2 control-label">To</label>
-                            <div class="col-sm-10">
-                                <div class="input-group">
-                                    <input type="text" class="form-control datepicker" id="to" name="to" placeholder="mm/dd/yyyy" required>
-                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Apply</button>
-                </div>
-            </form>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
+<!-- modal -->
 <div id="data-entry" class="modal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -156,9 +111,9 @@
                         <label for="employee" class="col-sm-3 control-label">Employee Name</label>
                         <div class="col-sm-9">
                             <div class="input-group" style="padding-right: 1px;">
-                                <select id="employee" name="userId" type="text" class="form-control select2" style="width: 100%" required></select>
+                                <select id="employee" name="employeeId" class="form-control select2 employee-list" data-cascade="#employee-name" style="width: 100%" required></select>
                                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                                <input type="hidden" id="ee-name" name="employeeName" />
+                                <input type="hidden" id="employee-name" name="employeeName" />
                             </div>
                         </div>
                     </div>
@@ -199,157 +154,6 @@
         <!-- /.modal-content -->
     </div>
 </div>
-
-
 @section scripts {
-    <script src="~/lib/moment/min/moment.min.js"></script>
-    <script src="~/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
-    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-    <script src="~/lib/jquery-form/jquery.form.js"></script>
-    <script src="~/lib/select2/dist/js/select2.full.min.js"></script>
-
-    <!-- Page Script -->
-    <script>
-        $.validator.setDefaults({
-            showErrors: function (map, list) {
-                var errorClass = this.settings.errorClass;
-                // reset errors
-                this.currentElements.removeAttr('title').removeClass(errorClass);
-                // display errors
-                $.each(list, function (index, error) {
-                    var $elem = $(error.element);
-                    if ($elem.hasClass('select2')) {
-                        $elem = $elem.next();
-                    }
-                    $elem.attr('title', error.message).addClass(errorClass);
-                });
-            }
-        });
-
-        $(function () {
-            $(document).ajaxStart(function () { Pace.restart(); });
-
-            // initialize validation
-            $('.modal form').each(function () {
-                var $form = $(this);
-                var validator = $form.validate();
-                $form.data('validator', validator);
-            });
-
-            // reset form everytime the modal is hidden
-            $('.modal').on('hide.bs.modal', function () {
-                $(this).find('form').reset();
-            });
-
-            // bind search on enter key
-            $('#searchbox').keypress(function (e) {
-                var $this = $(this);
-                if (e.which === 13) {
-                    e.preventDefault();
-                    $('#search-form').ajaxSubmit({
-                        url: '/timekeeping/search',
-                        data: {
-                            keyword: $this.val()
-                        },
-                        success: function (result) {
-                            $('#timekeeping-form>table>tbody').html(result);
-                        }
-                    });
-                }
-            });
-
-            // load attendance logs
-            $('#download form').ajaxForm({
-                beforeSubmit: function (arr, $form, options) {
-                    var b = $form.valid();
-                    if (b) {
-                        $('#download').modal('toggle');
-                    }
-                    return b;
-                },
-                success: function (result) {
-                    $('.mailbox-messages').html(result);
-                }
-            });
-
-            // add new entry to attendance logs
-            $('#data-entry :submit').click(function (e) {
-                e.preventDefault();
-                var form = $('#data-entry form');
-                if (!form.valid())
-                    return;
-                var data = form.serializeObject();
-                $('#timekeeping-form').ajaxSubmit({
-                    url: '/timekeeping/dataentry',
-                    data: data,
-                    success: function (result) {
-                        $('#timekeeping-form>table>tbody').html(result);
-                        $('#data-entry form').reset();
-                    }
-                });
-            });
-
-            // save logs as report
-            $('.save-record').click(function () {
-                if ($("#timekeeping-form>table>tbody tr:not('.no-data')").length === 0)
-                    return;
-
-                $('#timekeeping-form').submit();
-            });
-
-            // enable drill down on grid/table
-            $(document).on(
-                'click',
-                '.mailbox-messages .drill-down',
-                function () {
-                    var $this = $(this);
-                    var $row = $this.closest('tr').next();
-
-                    $this.toggleClass('collapsed');
-
-                    if ($this.hasClass('collapsed')) {
-                        $row.removeClass('hidden');
-                    } else {
-                        $row.addClass('hidden');
-                    }
-                }
-            );
-
-            // employee list
-            $("#employee").select2({
-                ajax: {
-                    url: '/api/timekeeping/employees',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            q: params.term,
-                            s: 10
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data
-                        };
-                    },
-                    cache: true
-                },
-                minimumInputLength: 1
-            }).on(
-                'select2:select',
-                function (e) {
-                    $('#ee-name').val(e.params.data.text);
-                    $(this).next().removeAttr('title').removeClass('error');
-                }
-            );
-
-            $('.datetimepicker').datetimepicker({
-                useCurrent: false
-            });
-            $('.datepicker').datetimepicker({
-                format: 'MM/DD/YYYY'
-            });
-        });
-    </script>
+    @await Html.PartialAsync("_Scripts")
 }

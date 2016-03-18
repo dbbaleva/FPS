@@ -7,6 +7,8 @@ namespace FPS.ViewModels.Timekeeping
 {
     public class TimeAttendance
     {
+        public int EmployeeId { get; set; }
+
         public string EmployeeTitle { get; set; }
 
         public string EmployeeName { get; set; }
