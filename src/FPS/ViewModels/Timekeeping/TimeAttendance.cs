@@ -92,15 +92,11 @@ namespace FPS.ViewModels.Timekeeping
                 remarks.Add("LATE");
             }
 
-
             // 1 hour undertime if no timeout
-            if (TimeOut == null)
+            if (TimeOut == null && Date != DateTime.Today)
             {
-                if (Date != DateTime.Today || DateTime.Now >= timeout)
-                {
-                    TimeOut = timeout.AddMinutes(-60);
-                    remarks.Add("NO TIMEOUT");
-                }
+                TimeOut = timeout.AddMinutes(-60);
+                remarks.Add("NO TIMEOUT");
             }
 
             if (TimeIn != null && TimeOut != null)
