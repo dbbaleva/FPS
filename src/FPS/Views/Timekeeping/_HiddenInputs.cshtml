@@ -2,6 +2,7 @@
 
 @{var model = (string) ViewBag.ModelName;}
 
+<input type="hidden" value="@Model.EmployeeId" name="@($"{model}.EmployeeId")" />
 <input type="hidden" value="@Model.EmployeeName" name="@($"{model}.EmployeeName")" />
 <input type="hidden" value="@Model.EmployeeTitle" name="@($"{model}.EmployeeTitle")" />
 <input type="hidden" value="@Model.Date" name="@($"{model}.Date")" />

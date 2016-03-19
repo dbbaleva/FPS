@@ -29,11 +29,6 @@ namespace FPS.ViewModels.Timekeeping
                         Date = date
                     };
 
-                    if (ee.EmployeeName.Contains("ALANO"))
-                    {
-                        var temp = ee;
-                    }
-
                     var attLog = timeLogs.Where(l => l.EnrollNumber == ee.BadgeNumber &&
                                                  l.TimeStamp.Date == attendance.Date).ToList();
 

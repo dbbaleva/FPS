@@ -39,14 +39,19 @@
 
         // download attendance logs
         $('#grid-filters').ajaxForm({
+            beforeSubmit: function() {
+                $('.grid').prepend($('<div>', {
+                    'class': 'loader'
+                }));
+            },
             success: function (result) {
-                $('#timekeeping-form').replaceWith(result);
+                $('.grid').html(result);
             }
         });
 
         // grid filters 
         $('.filter-record').click(function () {
-            if ($('#timekeeping-form>table>tbody tr:not(.no-data)').length === 0)
+            if ($('#search-form input').length === 0)
                 return;
 
             var data = $('#grid-filters').serializeObject();
@@ -56,25 +61,10 @@
 
             $('#search-form').ajaxSubmit({
                 data: data,
-                success: function(result) {
+                success: function (result) {
                     $('#timekeeping-form>table>tbody').html(result);
                 }
             });
-        });
-
-        // load attendance logs
-        $('#download form').ajaxForm({
-            beforeSubmit: function (arr, $form, options) {
-                var b = $form.valid();
-                if (b) {
-                    $('#download').modal('toggle');
-                }
-                return b;
-            },
-            data: $('#grid-filters').serializeObject(),
-            success: function (result) {
-                $('#timekeeping-form').replaceWith(result);
-            }
         });
 
         // add new entry to attendance logs

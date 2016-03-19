@@ -789,7 +789,6 @@ function _init() {
 $(function () {
 
     // additional cleanup on form reset
-    
     $('form').on('reset', function () {
         var $this = $(this);
         // if form has select2 then reset
