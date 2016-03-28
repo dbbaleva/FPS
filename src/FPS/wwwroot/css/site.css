@@ -46,6 +46,14 @@
     right: 0;
 }
 
+.btn-group .btn + .btn[data-toggle="tooltip"] {
+    border-left-color: transparent;
+    margin-left: 0;
+}
+.btn-group .btn + .btn[data-toggle="tooltip"]:hover {
+    border-left-color: #adadad
+}
+
 /* CSS Spinner
    http://projects.lukehaas.me/css-loaders/
 */
