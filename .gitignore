@@ -44,6 +44,7 @@ TestResult.xml
 dlldata.c
 
 # DNX
+appsettings.production.json
 project.lock.json
 artifacts/
 
