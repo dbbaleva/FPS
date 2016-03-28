@@ -78,6 +78,13 @@ namespace FPS.ViewModels.Timekeeping
 
             var remarks = new List<string>();
 
+            // update to grace period re: updated company policy
+            // starting march 15, 2016
+            if (date >= new DateTime(2016, 3, 15) && IsWeekDay(date))
+            {
+                gracePeriod = new TimeSpan(0, 20, 0);
+            }
+
             // 1 hour late if no timein
             if (TimeIn == null)
             {
