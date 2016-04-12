@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -100,8 +101,11 @@ namespace FPS.TagHelpers
             do
             {
                 var css = item.Attributes["class"] ?? item.Attributes.Append("class");
-                if (!css.Value.Contains(ActiveCss))
-                    css.Value = $"{css.Value} {ActiveCss}".Trim();
+                var activeCss = GetActiveCss();
+                if (css.Value.Contains("collapse"))
+                    activeCss += " in";
+                if (!css.Value.Contains(activeCss))
+                    css.Value = $"{css.Value} {activeCss}".Trim();
                 item = item.ParentNode;
             } while (item != null && item.ParentNode.Name != "#document");
         }
@@ -139,6 +143,11 @@ namespace FPS.TagHelpers
 
                 return await new StreamReader(ms).ReadToEndAsync();
             }
+        }
+
+        private string GetActiveCss()
+        {
+            return ActiveCss ?? "active";
         }
     }
 }
