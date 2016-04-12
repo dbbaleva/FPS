@@ -65,8 +65,10 @@ namespace FPS.ViewModels.Timekeeping
                 ? new DateTime(date.Year, date.Month, date.Day, 12, 00, 0)
                 : new DateTime(date.Year, date.Month, date.Day, 17, 30, 0);
 
-            var gracePeriod = string.IsNullOrEmpty(EmployeeTitle) && IsWeekDay(date)
-                ? new TimeSpan(0, 10, 0)
+            // update to grace period re: updated company policy
+            // starting march 15, 2016
+            var gracePeriod = string.IsNullOrEmpty(EmployeeTitle) && IsWeekDay(date) 
+                ? (date < new DateTime(2016, 3, 15) ? new TimeSpan(0, 10, 0) : new TimeSpan(0, 20, 0))
                 : new TimeSpan();
 
             var overtime = IsWeekDay(date)
@@ -77,13 +79,6 @@ namespace FPS.ViewModels.Timekeeping
             var afterLunch = new DateTime(date.Year, date.Month, date.Day, 13, 00, 0);
 
             var remarks = new List<string>();
-
-            // update to grace period re: updated company policy
-            // starting march 15, 2016
-            if (date >= new DateTime(2016, 3, 15) && IsWeekDay(date))
-            {
-                gracePeriod = new TimeSpan(0, 20, 0);
-            }
 
             // 1 hour late if no timein
             if (TimeIn == null)
@@ -108,11 +103,28 @@ namespace FPS.ViewModels.Timekeeping
 
             if (TimeIn != null && TimeOut != null)
             {
+                // ignore undertime for employees with the
+                // following title
+                var ignoreTitles = new[]
+                {
+                    "Admin",
+                    "Customs Rep",
+                    "Driver"
+                };
+
                 // undertime
                 if (TimeOut < timeout)
                 {
-                    Undertime = (TimeSpan)(timeout - TimeOut);
-                    remarks.Add("UNDERTIME");
+                    if (ignoreTitles.Contains(EmployeeTitle))
+                    {
+                        Undertime = new TimeSpan(0, 0, 0);
+                        remarks.Add("EARLY OUT");
+                    }
+                    else
+                    {
+                        Undertime = (TimeSpan)(timeout - TimeOut);
+                        remarks.Add("UNDERTIME");
+                    }
                 }
 
                 // compute worktime
